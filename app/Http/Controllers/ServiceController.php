@@ -12,11 +12,11 @@ class ServiceController extends Controller
 {
     public function register(Request $request){
         //unused =========
-        $request->validate([            
-            // 'email' => ['required' , 'regex:/[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/u'],
-            'email' => ['required' , 'email:rfc,dns'],
-            'password' => 'required',
-        ]);
+        // $request->validate([            
+        //     // 'email' => ['required' , 'regex:/[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/u'],
+        //     'email' => ['required' , 'email:rfc,dns'],
+        //     'password' => 'required',
+        // ]);
         //unused ==========
 
         $serve = new Service();
@@ -37,11 +37,13 @@ class ServiceController extends Controller
         $serve = new Service();
         $response = $serve->login($request);
         // return $response;
-        if($response === "valid"){
+        if($response['message'] === "valid"){
             //Successful login
-
             $auth = new AuthController();
-            $access_token = $auth->generate($request->email);
+            $access_token = $auth->generate(
+                $request->email, 
+                $response['uid']
+            );
             $auth->access($access_token);
 
             return array("access_token" => $access_token);

@@ -28,14 +28,18 @@ class Service extends Model
         $date = date("Y-m-d H:i:s");  
 
         $result = DB::table('user')
-                ->select('email', 'password')
+                ->select('id', 'email', 'password')
                 ->where('email', '=', $request->email)
                 ->get();
                 
         $hashedpassword = $result[0]->password;
+        $uid = $result[0]->id;
 
         if (Hash::check($request->password, $hashedpassword)) {
-            return "valid";
+            return array(
+                "message" => "valid",
+                "uid" => $uid
+            );
         }else{
             // lock account ======================================
             // $result = DB::insert(

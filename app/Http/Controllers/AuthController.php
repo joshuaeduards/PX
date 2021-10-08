@@ -11,10 +11,17 @@ use App\Service\JWTServiceInterface;
 
 class AuthController extends ServiceController
 {
-    public function generate($value){
-        $token = $value;
-        //addtl. code for encryption
-        return $token;
+    public function generate($email, $uid){
+        $config = app()->make(Configuration::class);
+        assert($config instanceof Configuration);
+
+        $token = $config->builder()
+                        // ->issuedBy('http://example.com')
+                        ->withClaim('uid', $uid)
+                        ->withHeader('email', $email)
+                        ->getToken($config->signer(), $config->signingKey());
+
+        return $token->toString();
     }
     public function access($value){
         Session::put('access', $value);
